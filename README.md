@@ -5,7 +5,7 @@
   
 </p>
 
-Веб-менеджер для серверов [MINECRAFT: JAVA EDITION](https://www.minecraft.net/ru-ru/download/server)
+Веб-менеджер для серверов [Minecraft: Java Edition](https://www.minecraft.net/ru-ru/download/server)
 
 MC Server Manager позволяет устанавливать и управлять серверами Minecraft, получать списки пользователей на сервере и использовать консольные команды.
 
