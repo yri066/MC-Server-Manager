@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "MC_Server_Manager": {
+    "MCServerManager": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
