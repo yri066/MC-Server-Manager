@@ -7,7 +7,7 @@ namespace MCServerManager.Library.Data.Tools
 	/// <summary>
 	/// Работа с Json
 	/// </summary>
-	internal class JsonTool
+	public class JsonTool
 	{
 		/// <summary>
 		/// Сериализация обьекта в JSON.
@@ -15,7 +15,7 @@ namespace MCServerManager.Library.Data.Tools
 		/// <typeparam name="T">Тип объекта.</typeparam>
 		/// <param name="data">Объект для сериализации.</param>
 		/// <returns>Данные в формате Json.</returns>
-		public string Serialize<T>(T data)
+		public static string Serialize<T>(T data)
 		{
 			if (data == null)
 			{
@@ -31,7 +31,7 @@ namespace MCServerManager.Library.Data.Tools
 		/// <typeparam name="T">Тип объекта.</typeparam>
 		/// <param name="json">Данные в формате Json.</param>
 		/// <returns>Экземпляр объекта.</returns>
-		public T Deserialize<T>(string json)
+		public static T Deserialize<T>(string json)
 		{
 			if (string.IsNullOrEmpty(json))
 			{
@@ -47,7 +47,7 @@ namespace MCServerManager.Library.Data.Tools
 		/// <typeparam name="T">Тип объекта.</typeparam>
 		/// <param name="path">Путь до файла.</param>
 		/// <returns>Экземпляр объекта.</returns>
-		public T LoadJsonDataFromFile<T>(string path)
+		public static T LoadJsonDataFromFile<T>(string path)
 		{
 			if (string.IsNullOrEmpty(path))
 			{
@@ -69,7 +69,7 @@ namespace MCServerManager.Library.Data.Tools
 		/// <param name="path">Путь до файла.</param>
 		/// <param name="data">Объект для сериализации.</param>
 		/// <returns>true - данные успешно сохранены, false - не удалось сохранить.</returns>
-		public bool SaveJsonDataToFile<T>(string path, T data)
+		public static bool SaveJsonDataToFile<T>(string path, T data)
 		{
 			if (!File.Exists(path))
 			{
