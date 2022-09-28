@@ -48,13 +48,13 @@ namespace MCServerManager.Service
 		{
 			var list = LoadServerData();
 
-			foreach(var server in list)
+			foreach (var server in list)
 			{
 				try
 				{
 					AddServer(server);
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Console.WriteLine(ex.Message);
 				}
@@ -62,7 +62,7 @@ namespace MCServerManager.Service
 
 			foreach (var server in servers)
 			{
-				if(server.serverData.AutoStart)
+				if (server.serverData.AutoStart)
 				{
 					server.Start();
 				}
@@ -106,7 +106,7 @@ namespace MCServerManager.Service
 		/// <exception cref="Exception">Директория или порт используются другим сервером.</exception>
 		private void AddServer(ServerData serverData)
 		{
-			if(servers.Where(x => x.Port == serverData.Port).Any())
+			if (servers.Where(x => x.Port == serverData.Port).Any())
 			{
 				throw new Exception($"Порт {serverData.Port} занят другим сервером");
 			}
