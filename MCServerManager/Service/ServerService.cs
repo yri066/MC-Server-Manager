@@ -1,6 +1,7 @@
 ﻿using MCServerManager.Library.Actions;
 using MCServerManager.Library.Data.Model;
 using MCServerManager.Library.Data.Tools;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Collections.Generic;
 using System.IO;
 
@@ -47,7 +48,17 @@ namespace MCServerManager.Service
 		{
 			var list = LoadServerData();
 
-			list.ForEach(server => servers.Add(new GameServer(server)));
+			foreach(var server in list)
+			{
+				try
+				{
+					AddServer(server);
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
 
 			foreach (var server in servers)
 			{
@@ -59,11 +70,41 @@ namespace MCServerManager.Service
 		}
 
 		/// <summary>
+		/// Создает новый сервер.
+		/// </summary>
+		/// <param name="name">Название.</param>
+		/// <param name="autoStart">Автозапуск.</param>
+		/// <param name="workDirectory">Расположение сервера.</param>
+		/// <param name="programm">Программа для запуска.</param>
+		/// <param name="arguments">Аргументы запуска.</param>
+		/// <param name="addres">Адрес сервера.</param>
+		/// <param name="port">Используемый порт.</param>
+		/// <returns>Идентификатор сервера.</returns>
+		public Guid CreateServer(string name, bool autoStart, string workDirectory, string programm,
+			string arguments, string addres, int port)
+		{
+			var id = Guid.NewGuid();
+			AddServer(new ServerData()
+			{
+				Id = id,
+				Name = name,
+				AutoStart = autoStart,
+				WorkDirectory = workDirectory,
+				Programm = programm,
+				Arguments = arguments,
+				Addres = addres,
+				Port = port
+			});
+
+			return id;
+		}
+
+		/// <summary>
 		/// Добавить новый сервер.
 		/// </summary>
 		/// <param name="serverData">Информация о сервере.</param>
 		/// <exception cref="Exception">Директория или порт используются другим сервером.</exception>
-		public void AddServer(ServerData serverData)
+		private void AddServer(ServerData serverData)
 		{
 			if(servers.Where(x => x.Port == serverData.Port).Any())
 			{
