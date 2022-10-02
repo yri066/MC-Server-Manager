@@ -8,9 +8,9 @@ namespace MCServerManager.Library.Actions
 	/// </summary>
 	public class GameServer
 	{
-		public ServerData serverData { get; private set; }
-		public Guid Id { get { return serverData.Id; } }
-		public string Name { get { return serverData.Name; } }
+		public ServerData ServerData { get; private set; }
+		public Guid Id { get { return ServerData.Id; } }
+		public string Name { get { return ServerData.Name; } }
 		public string Addres { get { return Addres; } }
 		public int Port { get { return Port; } }
 		public Status State { get; private set; }
@@ -41,7 +41,7 @@ namespace MCServerManager.Library.Actions
 				//throw new DirectoryNotFoundException(nameof(data.WorkDirectory));
 			}
 
-			this.serverData = data;
+			this.ServerData = data;
 
 			State = Status.Off;
 

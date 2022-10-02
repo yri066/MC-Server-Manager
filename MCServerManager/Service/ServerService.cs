@@ -25,7 +25,7 @@ namespace MCServerManager.Service
 		/// <summary>
 		/// Список серверов.
 		/// </summary>
-		public List<GameServer> servers { get; private set; }
+		public List<GameServer> Servers { get; private set; } = new();
 
 		/// <summary>
 		/// Конфигурация.
@@ -36,7 +36,6 @@ namespace MCServerManager.Service
 		{
 			_configuration = configuration;
 			_pathFileSettings = _configuration.GetValue<string>(_keyGetFileSettings);
-			servers = new List<GameServer>();
 
 			AutoRun();
 		}
@@ -60,9 +59,9 @@ namespace MCServerManager.Service
 				}
 			}
 
-			foreach (var server in servers)
+			foreach (var server in Servers)
 			{
-				if (server.serverData.AutoStart)
+				if (server.ServerData.AutoStart)
 				{
 					server.Start();
 				}
@@ -106,17 +105,17 @@ namespace MCServerManager.Service
 		/// <exception cref="Exception">Директория или порт используются другим сервером.</exception>
 		private void AddServer(ServerData serverData)
 		{
-			if (servers.Where(x => x.Port == serverData.Port).Any())
+			if (Servers.Where(x => x.Port == serverData.Port).Any())
 			{
 				throw new Exception($"Порт {serverData.Port} занят другим сервером");
 			}
 
-			if (servers.Where(x => x.serverData.WorkDirectory == serverData.WorkDirectory).Any())
+			if (Servers.Where(x => x.ServerData.WorkDirectory == serverData.WorkDirectory).Any())
 			{
 				throw new Exception($"Указанная директория используется другим сервером");
 			}
 
-			servers.Add(new GameServer(serverData));
+			Servers.Add(new GameServer(serverData));
 
 			SaveServerData();
 		}
@@ -197,7 +196,7 @@ namespace MCServerManager.Service
 		{
 			var list = new List<ServerData>();
 
-			servers.ForEach(server => list.Add(server.serverData));
+			Servers.ForEach(server => list.Add(server.ServerData));
 
 			JsonTool.SaveJsonDataToFile(_pathFileSettings, JsonTool.Serialize(list));
 		}
@@ -208,9 +207,9 @@ namespace MCServerManager.Service
 		/// <param name="id">Идентификатор сервера.</param>
 		/// <returns>Экземпляе класса</returns>
 		/// <exception cref="Exception">Указанный сервер не найден.</exception>
-		private GameServer GetServer(Guid id)
+		public GameServer GetServer(Guid id)
 		{
-			var exemplar = servers.Where(x => x.Id == id).FirstOrDefault();
+			var exemplar = Servers.Where(x => x.Id == id).FirstOrDefault();
 
 			if (exemplar == null)
 			{
@@ -218,6 +217,16 @@ namespace MCServerManager.Service
 			}
 
 			return exemplar;
+		}
+
+		/// <summary>
+		/// Получить игформацию о сервере.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public ServerData GetServerData(Guid id)
+		{
+			return GetServer(id).ServerData;
 		}
 	}
 }
