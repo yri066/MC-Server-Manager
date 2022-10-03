@@ -10,7 +10,7 @@
 MC Server Manager позволяет управлять серверами Minecraft, получать списки пользователей на сервере и использовать консольные команды.
 
 ## Минимальные системные требования
-- Операционная система: Linux, Windows, macOS, Android[*](https://github.com/yri066/MC-Server-Manager "Требуется установка Kali Linux")
+- Операционная система: Linux, Windows, macOS, Android[*](https://github.com/yri066/MC-Server-Manager "Требуется установка Linux. Например: Kali Linux")
 - Частота процессора: 1 GHz
 - Место на диске: 8 GB 
 - Оперативная память: 2 GB 
