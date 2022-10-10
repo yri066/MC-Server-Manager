@@ -38,13 +38,13 @@ namespace MCServerManager.Library.Data.Model
 		public string Arguments { get; set; }
 
 		/// <summary>
-		/// Адрес сервера(ip)
+		/// Адрес сервера/ip
 		/// </summary>
 		public string Addres { get; set; }
 
 		/// <summary>
 		/// Используемый порт
 		/// </summary>
-		public int Port { get; set; }
+		public int? Port { get; set; }
 	}
 }
