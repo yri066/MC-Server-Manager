@@ -37,13 +37,14 @@ namespace MCServerManager.Service
 			_configuration = configuration;
 			_pathFileSettings = _configuration.GetValue<string>(_keyGetFileSettings);
 
+			LoadServers();
 			AutoRun();
 		}
 
 		/// <summary>
-		/// Добавляет экземпляры серверов в список и запускает их.
+		/// Заполняет список серверов
 		/// </summary>
-		private void AutoRun()
+		private void LoadServers()
 		{
 			var list = LoadServerData();
 
@@ -58,10 +59,16 @@ namespace MCServerManager.Service
 					Console.WriteLine(ex.Message);
 				}
 			}
+		}
 
+		/// <summary>
+		/// Запускает серверные приложения
+		/// </summary>
+		private void AutoRun()
+		{
 			foreach (var server in Servers)
 			{
-				if (server.ServerData.AutoStart)
+				if (server.AutoStart)
 				{
 					server.Start();
 				}
@@ -80,7 +87,7 @@ namespace MCServerManager.Service
 		/// <param name="port">Используемый порт.</param>
 		/// <returns>Идентификатор сервера.</returns>
 		public Guid CreateServer(string name, bool autoStart, string workDirectory, string programm,
-			string arguments, string addres, int port)
+			string arguments, string addres, int? port)
 		{
 			var id = Guid.NewGuid();
 			AddServer(new ServerData()
@@ -94,6 +101,8 @@ namespace MCServerManager.Service
 				Addres = addres,
 				Port = port
 			});
+
+			SaveServerData();
 
 			return id;
 		}
@@ -110,25 +119,29 @@ namespace MCServerManager.Service
 				throw new Exception($"Порт {serverData.Port} занят другим сервером");
 			}
 
-			if (Servers.Where(x => x.ServerData.WorkDirectory == serverData.WorkDirectory).Any())
+			if (Servers.Where(x => x.WorkDirectory == serverData.WorkDirectory).Any())
 			{
 				throw new Exception($"Указанная директория используется другим сервером");
 			}
 
 			Servers.Add(new GameServer(serverData));
-
-			SaveServerData();
 		}
 
-		//TODO: Реализовать удаление.
 		/// <summary>
 		/// Удалить указанный сервер.
 		/// </summary>
 		/// <param name="id">Идентификатор сервера.</param>
-		/// <exception cref="NotImplementedException">Метод еще не реализован.</exception>
 		public void DeleteServer(Guid id)
 		{
-			throw new NotImplementedException();
+			var exemplar = GetServer(id);
+
+			if (exemplar.State != ServerStatus.Status.Off && exemplar.State != ServerStatus.Status.Error)
+			{
+				exemplar.Close();
+			}
+
+			Servers.Remove(exemplar);
+			SaveServerData();
 		}
 
 		/// <summary>
@@ -143,11 +156,10 @@ namespace MCServerManager.Service
 
 			if (id != serverData.Id)
 			{
-				throw new ArgumentException("Ошибка идентификатора настроек");
+				throw new ArgumentException("Ошибка, идентификатор настроек не совпадает с идентификатором изменяемого сервера.");
 			}
 
 			exemplar.UpdateData(serverData);
-
 			SaveServerData();
 		}
 
@@ -169,15 +181,22 @@ namespace MCServerManager.Service
 			GetServer(id).Stop();
 		}
 
-		//TODO: Реализовать метод.
+		/// <summary>
+		/// Выключает указанный сервер, не дожидаясь сохранения данных.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		public void CloseServer(Guid id)
+		{
+			GetServer(id).Close();
+		}
+
 		/// <summary>
 		/// Перезагружает указанный сервер.
 		/// </summary>
 		/// <param name="id">Идентификатор сервера.</param>
-		/// <exception cref="NotImplementedException">Метод еще не реализован.</exception>
 		public void Restart(Guid id)
 		{
-			throw new NotImplementedException();
+			GetServer(id).Restart();
 		}
 
 		/// <summary>
@@ -194,11 +213,7 @@ namespace MCServerManager.Service
 		/// </summary>
 		private void SaveServerData()
 		{
-			var list = new List<ServerData>();
-
-			Servers.ForEach(server => list.Add(server.ServerData));
-
-			JsonTool.SaveJsonDataToFile(_pathFileSettings, JsonTool.Serialize(list));
+			JsonTool.SaveJsonDataToFile(_pathFileSettings, Servers);
 		}
 
 		/// <summary>
@@ -220,13 +235,23 @@ namespace MCServerManager.Service
 		}
 
 		/// <summary>
-		/// Получить игформацию о сервере.
+		/// Получить настройки серверного приложения по идентификатору.
 		/// </summary>
 		/// <param name="id">Идентификатор сервера.</param>
-		/// <returns>Информация о сервере.</returns>
+		/// <returns>Настройки серверного приложения.</returns>
 		public ServerData GetServerData(Guid id)
 		{
 			return GetServer(id).ServerData;
+		}
+
+		/// <summary>
+		/// Отправляет сообщение в серверное приложение
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <param name="text">Сообщение.</param>
+		public void SetServerCommant(Guid id, string message)
+		{
+			GetServer(id).SendServerCommand(message);
 		}
 	}
 }
