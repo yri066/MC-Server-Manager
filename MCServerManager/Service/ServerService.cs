@@ -83,11 +83,11 @@ namespace MCServerManager.Service
 		/// <param name="workDirectory">Расположение сервера.</param>
 		/// <param name="programm">Программа для запуска.</param>
 		/// <param name="arguments">Аргументы запуска.</param>
-		/// <param name="addres">Адрес сервера.</param>
+		/// <param name="address">Адрес сервера.</param>
 		/// <param name="port">Используемый порт.</param>
 		/// <returns>Идентификатор сервера.</returns>
 		public Guid CreateServer(string name, bool autoStart, string workDirectory, string programm,
-			string arguments, string addres, int? port)
+			string arguments, string address, int? port)
 		{
 			var id = Guid.NewGuid();
 			AddServer(new ServerData()
@@ -98,7 +98,7 @@ namespace MCServerManager.Service
 				WorkDirectory = workDirectory,
 				Programm = programm,
 				Arguments = arguments,
-				Addres = addres,
+				Address = address,
 				Port = port
 			});
 

@@ -40,7 +40,7 @@ namespace MCServerManager.Library.Data.Model
 		/// <summary>
 		/// Адрес сервера/ip
 		/// </summary>
-		public string Addres { get; set; }
+		public string Address { get; set; }
 
 		/// <summary>
 		/// Используемый порт

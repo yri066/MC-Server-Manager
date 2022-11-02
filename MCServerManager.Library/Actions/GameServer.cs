@@ -55,7 +55,7 @@ namespace MCServerManager.Library.Actions
 		/// <summary>
 		/// Адрес сервера/ip.
 		/// </summary>
-		public string Addres { get { return ServerData.Addres; } }
+		public string Address { get { return ServerData.Address; } }
 
 		/// <summary>
 		/// Используемый порт.
@@ -82,7 +82,7 @@ namespace MCServerManager.Library.Actions
 		/// <summary>
 		/// Cобытие завершения работы серверного приложения.
 		/// </summary>
-		public event StoppedServerEventHandler ClocedServer;
+		public event StoppedServerEventHandler ClosedServer;
 
 
 		/// <summary>
@@ -205,7 +205,7 @@ namespace MCServerManager.Library.Actions
 			{
 				State = Status.Off;
 				// Вызывается событие отключения серверного приложения
-				ClocedServer?.Invoke(Id);
+				ClosedServer?.Invoke(Id);
 			}
 		}
 
