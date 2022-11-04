@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static MCServerManager.Library.Data.Model.ServerStatus;
 
@@ -74,6 +75,22 @@ namespace MCServerManager.Library.Actions
 		private Process _process;
 
 		/// <summary>
+		/// Список игроков сервера (версия списка, список игроков).
+		/// </summary>
+		public (Guid ListVersion, List<string> PlayersList) Players = (Guid.NewGuid(), new());
+
+		/// <summary>
+		/// Делегат события завершения запуска серверного приложения.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		public delegate void ServerStartedEventHandler(Guid id);
+
+		/// <summary>
+		/// Cобытие завершения запуска серверного приложения.
+		/// </summary>
+		public event ServerStartedEventHandler ServerStarted;
+
+		/// <summary>
 		/// Делегат события завершения работы серверного приложения.
 		/// </summary>
 		/// <param name="id">Идентификатор сервера.</param>
@@ -84,7 +101,6 @@ namespace MCServerManager.Library.Actions
 		/// </summary>
 		public event StoppedServerEventHandler ClosedServer;
 
-
 		/// <summary>
 		/// Делегат события завершения работы серверного приложения при перезагрузке.
 		/// </summary>
@@ -94,6 +110,27 @@ namespace MCServerManager.Library.Actions
 		/// Cобытие завершения работы серверного приложения при перезагрузке.
 		/// </summary>
 		event ServerOffEventHandler ServerOff;
+
+		/// <summary>
+		/// Тип сообщения от сервера.
+		/// </summary>
+		private enum ServerMessageType
+		{
+			None,
+			ServerStarted,
+			PlayerJoined,
+			PlayerLeft
+		};
+
+		/// <summary>
+		/// Словарь регулярных выражений для определения типа сообщения сервера.
+		/// </summary>
+		private readonly Dictionary<ServerMessageType, Regex> RegularExpressions = new()
+		{
+			[ServerMessageType.ServerStarted] = new Regex(@"\[\d*:\d*:\d*\]\s\[Server\sthread/INFO\]:\sDone\s\(.*\)!\sFor\shelp,\stype\s\x22help\x22", RegexOptions.Compiled),
+			[ServerMessageType.PlayerJoined] = new Regex(@"\[\d*:\d*:\d*\]\s\[Server\sthread/INFO\]:\s([^<>\s]*)\sjoined\sthe\sgame", RegexOptions.Compiled),
+			[ServerMessageType.PlayerLeft] = new Regex(@"\[\d*:\d*:\d*\]\s\[Server\sthread/INFO\]:\s([^<>\s]*)\sleft\sthe\sgame", RegexOptions.Compiled)
+		};
 
 		/// <summary>
 		/// Конструктор с параметром
@@ -167,7 +204,6 @@ namespace MCServerManager.Library.Actions
 
 			_process.Start();
 			_process.BeginOutputReadLine();
-			State = Status.Run;
 		}
 
 		/// <summary>
@@ -194,7 +230,8 @@ namespace MCServerManager.Library.Actions
 		private void ProcessClosed()
 		{
 			_process.Dispose();
-
+			Players.PlayersList.Clear();
+			Players.ListVersion = Guid.NewGuid();
 			if (State == Status.Launch)
 			{
 				State = Status.Error;
@@ -263,6 +300,34 @@ namespace MCServerManager.Library.Actions
 			}
 
 			Console.WriteLine(message);
+			CheckServerMessage(message);
+		}
+
+		/// <summary>
+		/// Проверяет сообщение от серверного приложения и выполняет необходимые действия.
+		/// </summary>
+		/// <param name="message">Текст сообщения.</param>
+		private void CheckServerMessage(string message)
+		{
+			switch (RegularExpressions.Where(Pair => Pair.Value.IsMatch(message)).Select(Pair => Pair.Key).DefaultIfEmpty(ServerMessageType.None).FirstOrDefault())
+			{
+				case ServerMessageType.ServerStarted:
+					//Сервер запущен
+					State = Status.Run;
+					//Вызывается событие завершения запуска серверного приложения
+					ServerStarted?.Invoke(Id);
+					break;
+				case ServerMessageType.PlayerJoined:
+					//Добавление игрока в список
+					Players.PlayersList.Add(RegularExpressions[ServerMessageType.PlayerJoined].Match(message).Groups[1].Value);
+					Players.ListVersion = Guid.NewGuid();
+					break;
+				case ServerMessageType.PlayerLeft:
+					//Удаление игрока из списка
+					Players.PlayersList.Remove(RegularExpressions[ServerMessageType.PlayerLeft].Match(message).Groups[1].Value);
+					Players.ListVersion = Guid.NewGuid();
+					break;
+			}
 		}
 
 		/// <summary>
