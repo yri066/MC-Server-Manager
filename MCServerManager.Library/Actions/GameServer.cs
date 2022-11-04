@@ -77,7 +77,7 @@ namespace MCServerManager.Library.Actions
 		/// <summary>
 		/// Список игроков сервера (версия списка, список игроков).
 		/// </summary>
-		private (Guid ListVersion, List<string> PlayersList) Players = (Guid.NewGuid(), new());
+		public (Guid ListVersion, List<string> PlayersList) Players = (Guid.NewGuid(), new());
 
 		/// <summary>
 		/// Делегат события завершения запуска серверного приложения.
@@ -230,7 +230,8 @@ namespace MCServerManager.Library.Actions
 		private void ProcessClosed()
 		{
 			_process.Dispose();
-
+			Players.PlayersList.Clear();
+			Players.ListVersion = Guid.NewGuid();
 			if (State == Status.Launch)
 			{
 				State = Status.Error;
