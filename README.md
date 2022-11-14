@@ -7,7 +7,7 @@
 
 Веб-менеджер для серверов [Minecraft: Java Edition](https://www.minecraft.net/ru-ru/download/server)
 
-MC Server Manager позволяет управлять серверами Minecraft, получать списки пользователей на сервере и использовать консольные команды.
+MC Server Manager позволяет управлять серверами Minecraft, получать списки пользователей на сервере и отключения игроков от сервера.
 
 ## Минимальные системные требования
 - Операционная система: Linux, Windows, macOS, Android[*](https://github.com/yri066/MC-Server-Manager "Требуется установка Linux. Например: Kali Linux")
