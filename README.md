@@ -2,6 +2,8 @@
 <p>
   
 [![forthebadge](https://forthebadge.com/images/badges/made-with-c-sharp.svg)](https://forthebadge.com)
+
+[![codebeat badge](https://codebeat.co/badges/91b71ef2-aacd-4921-8147-a57db3bff509)](https://codebeat.co/projects/github-com-yri066-mc-server-manager-main)
   
 </p>
 
