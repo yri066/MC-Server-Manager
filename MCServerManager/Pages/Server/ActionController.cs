@@ -14,20 +14,36 @@ namespace MCServerManager.Pages.Server
 			_serverService = serverService;
 		}
 
-		public string GetStatus(Guid id)
+		/// <summary>
+		/// Получить информацию о сервере.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public object GetStatus(Guid id)
 		{
 			try
 			{
-				return _serverService.GetServer(id).State.ToString();
+				var server = _serverService.GetServer(id);
+
+				return new
+				{
+					Status = server.State.ToString(),
+					PlayersListVersion = server.Players.ListVersion
+				};
 			}
 			catch (Exception ex)
 			{
 				HttpContext.Response.StatusCode = 404;
-				return ex.Message;
+				return new { errorText = ex.Message };
 			}
 		}
 
-		public string Start(Guid id)
+		/// <summary>
+		/// Запустить сервер.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public object Start(Guid id)
 		{
 			try
 			{
@@ -42,7 +58,12 @@ namespace MCServerManager.Pages.Server
 			return GetStatus(id);
 		}
 
-		public string Restart(Guid id)
+		/// <summary>
+		/// Перезапустить сервер.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public object Restart(Guid id)
 		{
 			try
 			{
@@ -57,7 +78,12 @@ namespace MCServerManager.Pages.Server
 			return GetStatus(id);
 		}
 
-		public string Stop(Guid id)
+		/// <summary>
+		/// Остановить сервер.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public object Stop(Guid id)
 		{
 			try
 			{
@@ -72,7 +98,12 @@ namespace MCServerManager.Pages.Server
 			return GetStatus(id);
 		}
 
-		public string Close(Guid id)
+		/// <summary>
+		/// Выключить сервер.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Информация о сервере.</returns>
+		public object Close(Guid id)
 		{
 			try
 			{
@@ -85,6 +116,24 @@ namespace MCServerManager.Pages.Server
 			}
 
 			return GetStatus(id);
+		}
+
+		/// <summary>
+		/// Получить список пользователей.
+		/// </summary>
+		/// <param name="id">Идентификатор сервера.</param>
+		/// <returns>Список пользователей.</returns>
+		public object GetUserList(Guid id)
+		{
+			try
+			{
+				return _serverService.GetServer(id).Players.PlayersList;
+			}
+			catch (Exception ex)
+			{
+				HttpContext.Response.StatusCode = 404;
+				return new { errorText = ex.Message };
+			}
 		}
 	}
 }
