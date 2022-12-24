@@ -1,10 +1,12 @@
 using MCServerManager.Models;
 using MCServerManager.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MCServerManager.Pages.Server
 {
+	[Authorize]
 	public class EditModel : PageModel
 	{
 		[BindProperty]

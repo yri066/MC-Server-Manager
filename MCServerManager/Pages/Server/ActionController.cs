@@ -1,8 +1,10 @@
 ﻿using MCServerManager.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MCServerManager.Pages.Server
 {
+	[Authorize]
 	[Route("/Server/{id:guid}/[action]")]
 	[ApiController]
 	public class ActionController : ControllerBase
