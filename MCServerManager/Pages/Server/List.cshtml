@@ -1,11 +1,15 @@
 ﻿@page "/list"
 @model MCServerManager.Pages.Server.ListModel
+@inject SignInManager<IdentityUser> SignInManager
 @{
 }
 
-<div class="col-md-12 text-end">
-    <a asp-page="/Server/Add" class="btn btn-success">Добавить сервер</a>
-</div>
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="col-md-12 text-end">
+        <a asp-page="/Server/Add" class="btn btn-success">Добавить сервер</a>
+    </div>
+}
 <br />
 @if (Model.Servers.Count != 0)
 {
@@ -18,15 +22,23 @@
                         <h5 class="card-title">@server.Name</h5>
                     </div>
                     <div class="col-sm">
-                        <p class="card-text">@server.Address:@server.Port</p>
+                        <p class="card-text">@server.Address
+                            @if(server.Port is not null)
+                            {
+                                <div>:</div>@server.Port
+                            }
+                        </p>   
                     </div>
                     <div class="col-auto text-end">
-                        <p class="card-text">Количество игроков: 0</p>
+                        <p class="card-text">Количество игроков: @server.Players.PlayersList.Count</p>
                     </div>
                 </div>
-                <div class="col-auto text-end">
-                    <a asp-page="/Server/Index" asp-route-id="@server.Id" class="btn btn-primary">Информация о сервере</a>
-                </div>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <div class="col-auto text-end">
+                        <a asp-page="/Server/Index" asp-route-id="@server.Id" class="btn btn-primary">Информация о сервере</a>
+                    </div>
+                }
             </div>
         </div>
     }
